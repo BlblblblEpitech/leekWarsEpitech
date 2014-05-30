@@ -1,0 +1,103 @@
+var t_weapon = getWeapon();
+var enemy = getNearestEnemy();
+var me = getLeek();
+var i;
+var mp = getMP();
+var shot;
+var my_life = getLife();
+var my_lifeMax = getTotalLife();
+var enemy_life = getLife(enemy);
+var enemy_cell = getCell(enemy);
+var my_cell = getCell();
+var enemy_range = getCellDistance(my_cell, enemy_cell);
+var n = 0;
+
+if (t_weapon == -1)
+{
+	setWeapon(WEAPON_DOUBLE_GUN);
+	say("Gl hf!");
+}
+while (getMP() != 0 && getTP() >= 1 && isDead(enemy) == 0 && n == 0)
+{
+my_cell = getCell();
+	if ((shot = useWeapon(enemy))== 0)
+	{
+	debug("shot if fail = " + shot);
+		if (my_life >= (my_lifeMax * (2/3)))
+		{
+			useChip(19, me);
+			useWeapon(enemy);
+		}
+		else if (my_life < (my_lifeMax * (2/3)))
+		{
+			useChip(2, me);
+			useChip(19, me);
+		}
+		else
+			useWeapon(enemy);
+		moveAwayFrom(enemy);
+	}
+	else if (shot == -3)
+	{
+		debug("shot if out of rang = " + shot);
+		debug("Enemy_range batard!!!! =  " + enemy_range);
+		enemy_range = getCellDistance(my_cell, enemy_cell);
+		if (enemy_range > 12)
+			moveToward(enemy, 1);
+		else if ((enemy_range - getMP()) <= 7 && (enemy_range - mp) > 2)
+			moveToward(enemy, 1);
+		else
+		{
+			if (getTurn() <= 25)
+			{
+				moveAwayFrom(enemy, 2);
+				n = 1;
+			}
+			else
+				moveToward(enemy);
+		}
+		enemy_range = getCellDistance(my_cell, enemy_cell);
+		debug("Enemy_range batard!!!! =  " + enemy_range);
+	}
+	else if (shot == 1 && my_life >= (my_lifeMax * (2/3)))
+	{
+		debug("shot if success = " + shot);
+		useWeapon(enemy);
+		moveAwayFrom(enemy);
+	}
+	else if (shot == 1 && my_life <= (my_lifeMax * (2/3)))
+	{
+		debug("shot if success = " + shot);
+		useChip(19, me);
+		useChip(2, me);
+		moveAwayFrom(enemy);
+	}
+}
+if (getMP() == 4 && (enemy_range = getCellDistance(my_cell, enemy_cell)) == 1)
+{
+	if (getWeapon() != 1)
+		setWeapon(WEAPON_PISTOL);
+	useChip(19, me);
+	useWeapon(enemy);
+	useChip(2, me);
+	useWeapon(enemy);
+	useChip(1, me);
+}
+/*else if (enemy_range == 11 && mp == 4)
+			moveToward(enemy, 1);
+		else if (enemy_range == 10 && mp >= 3)
+			moveToward(enemy, 1);
+		else if (enemy_range == 9 && mp >= 2)
+			moveToward(enemy, 1);
+		else if (enemy_range == 8 && mp >= 1)
+			moveToward(enemy, 1);*/
+if ((my_lifeMax - my_life) <= 20 && (my_lifeMax - my_life) > 0)
+	useChip(1, me);
+else if ((my_lifeMax - my_life) > 20) 
+{
+	useChip(2, me);
+	useChip(1, me);
+}
+say("/ff plz.");
+if (isDead(enemy) == 1)
+	say("Ton ame rejoindra le Vahalla des poireaux!");
